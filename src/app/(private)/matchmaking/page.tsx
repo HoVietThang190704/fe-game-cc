@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { MatchmakingWaitScreen } from "@/src/components/matchfound/MatchfoundScreen";
+import { MatchmakingScreen } from "@/src/components/matchmaking/MatchmakingScreen";
 
 export const metadata: Metadata = {
   title: "Đang tìm đối thủ | Minesweeper PvP",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function MatchmakingPage() {
-  return <MatchmakingWaitScreen />;
+  return <MatchmakingScreen />;
 }
