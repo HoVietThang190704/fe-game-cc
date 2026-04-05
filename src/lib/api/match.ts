@@ -22,14 +22,12 @@ export type MatchPlayer = {
   isReady: boolean;
   playerNumber: number;
   health: number;
-  isHost?: boolean; // UI helper property
 };
 
 export type MatchStateResponse = {
   matchId: string | null;
   pinCode: string;
   status: string;
-  hostId: string; // Add this line
   gameBoard: Record<string, unknown>;
   players: MatchPlayer[];
   boardState: {
@@ -145,31 +143,6 @@ export async function getMatchState(matchId: string, accessToken: string): Promi
   return body.data;
 }
 
-export async function leaveMatch(matchId: string, accessToken: string) {
-  const res = await fetch(
-    `${BASE_URL}${Endpoint.MATCH_LEAVE}/${matchId}/leave`,
-    {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
-  );
-
-  const body = (await res.json()) as BaseResponse<null>;
-  if (!res.ok || !body.success) {
-    throw new Error(body.message || `Leave match failed: ${res.status}`);
-  }
-
-  return true;
-}
-
-export type CreatePrivateMatchResponse = {
-  matchId: string | null;
-  pinCode: string;
-};
-
 export async function joinPrivateMatch(
   pinCode: string,
   accessToken: string,
@@ -189,4 +162,24 @@ export async function joinPrivateMatch(
   }
 
   return body.data;
+}
+
+export async function leaveMatch(matchId: string, accessToken: string) {
+  const res = await fetch(
+    `${BASE_URL}${Endpoint.MATCH_LEAVE}/${matchId}/leave`,
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+
+  const body = (await res.json()) as BaseResponse<null>;
+  if (!res.ok || !body.success) {
+    throw new Error(body.message || `Leave match failed: ${res.status}`);
+  }
+
+  return true;
 }
