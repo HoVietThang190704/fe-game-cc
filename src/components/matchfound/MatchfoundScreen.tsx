@@ -45,8 +45,13 @@ export function MatchmakingWaitScreen() {
   }, [disconnect, router]);
 
   return (
-    <div className="matchmaking-root relative flex min-h-screen flex-col items-center justify-center overflow-x-hidden px-4 py-10 sm:px-6">
-      <div className="relative z-10 flex w-full max-w-[min(100%,40rem)] flex-col items-center">
+    <div className="matchmaking-root relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 py-10 sm:px-6">
+      {/* Background decorative glows */}
+      <div className="matchmaking-bg-glow matchmaking-bg-glow-1" aria-hidden />
+      <div className="matchmaking-bg-glow matchmaking-bg-glow-2" aria-hidden />
+      <div className="matchmaking-bg-glow matchmaking-bg-glow-3" aria-hidden />
+
+      <div className="relative z-10 w-full max-w-[min(100%,40rem)]">
         <header className="mb-6 flex flex-col items-center gap-2 text-center">
           <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">Đang tìm đối thủ...</h1>
           <p className="text-sm text-cyan-300/90 sm:text-[0.9375rem]">
@@ -54,35 +59,44 @@ export function MatchmakingWaitScreen() {
           </p>
         </header>
 
-        <div className="matchmaking-glass w-full rounded-3xl border border-cyan-400/25 bg-[rgba(6,22,32,0.45)] p-6 shadow-[0_8px_48px_rgba(0,40,60,0.55)] backdrop-blur-xl sm:p-8">
-          <div className="mb-6 flex flex-col items-center">
-            <div className="relative flex h-[7.5rem] w-[7.5rem] items-center justify-center sm:h-[8.5rem] sm:w-[8.5rem]">
-              <div
-                className="matchmaking-spinner-ring pointer-events-none absolute inset-0 rounded-full"
-                aria-hidden
-              />
-              <div className="relative z-[1] flex h-[4.25rem] w-[4.25rem] items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-teal-600 shadow-[0_0_28px_rgba(34,211,238,0.55)] sm:h-[4.75rem] sm:w-[4.75rem]">
-                <Swords className="h-9 w-9 text-white drop-shadow-md sm:h-10 sm:w-10" strokeWidth={2} />
+        <div className="matchmaking-glass relative w-full overflow-hidden rounded-3xl border border-cyan-400/25 bg-[rgba(6,22,32,0.45)] p-6 shadow-[0_8px_48px_rgba(0,40,60,0.55)] backdrop-blur-xl sm:p-8">
+          <div className="flex flex-col items-center">
+            {/* Dual-ring spinner with Swords icon */}
+            <div className="matchmaking-spinner-container relative mb-5 flex h-[8rem] w-[8rem] items-center justify-center sm:h-[9rem] sm:w-[9rem]">
+              {/* Outer ring - darker, slower */}
+              <div className="matchmaking-spinner-ring matchmaking-spinner-ring-outer" aria-hidden />
+              {/* Inner ring - brighter, faster */}
+              <div className="matchmaking-spinner-ring matchmaking-spinner-ring-inner" aria-hidden />
+              {/* Center glow halo */}
+              <div className="matchmaking-spinner-halo" aria-hidden />
+              {/* Center icon */}
+              <div className="relative z-10 flex h-[3.75rem] w-[3.75rem] items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-teal-600 shadow-[0_0_32px_rgba(34,211,238,0.65)] sm:h-[4.25rem] sm:w-[4.25rem]">
+                <Swords className="h-8 w-8 text-white drop-shadow-md sm:h-9 sm:w-9" strokeWidth={2} />
               </div>
             </div>
 
-            <div className="mt-4 flex gap-1.5" aria-hidden>
+            {/* Animated dots */}
+            <div className="flex gap-1.5" aria-hidden>
               <span className="matchmaking-dot h-2 w-2 rounded-full bg-cyan-400" />
               <span className="matchmaking-dot matchmaking-dot--2 h-2 w-2 rounded-full bg-cyan-400" />
               <span className="matchmaking-dot matchmaking-dot--3 h-2 w-2 rounded-full bg-cyan-400" />
             </div>
           </div>
 
-          <section className="mb-5 w-full">
+          {/* Player info card with enhanced glow */}
+          <section className="my-5">
             <div className="w-full rounded-2xl border border-white/10 bg-white/[0.06] px-5 py-5 backdrop-blur-md sm:px-6">
               <p className="mb-3 text-center text-sm font-semibold tracking-wide text-white/80 sm:text-base">
                 Thông tin của bạn
               </p>
-              <div className="mx-auto flex w-full max-w-xl items-center justify-center gap-4 sm:gap-5">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-cyan-500/20 shadow-[0_0_20px_rgba(34,211,238,0.45)] ring-2 ring-cyan-400/40">
-                  <Gamepad2 className="h-7 w-7 text-cyan-200" />
+              <div className="flex items-center justify-center gap-4 sm:gap-5">
+                {/* Avatar with enhanced cyan glow */}
+                <div className="matchmaking-avatar-glow relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-cyan-500/20">
+                  <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-cyan-400/30 to-teal-600/30">
+                    <Gamepad2 className="h-7 w-7 text-cyan-200" />
+                  </div>
                 </div>
-                <div className="min-w-0 text-left">
+                <div className="min-w-0 flex-1">
                   <p className="truncate text-[1.3rem] leading-tight font-extrabold text-white sm:text-[1.7rem]">
                     {player.username}
                   </p>
@@ -95,15 +109,16 @@ export function MatchmakingWaitScreen() {
             </div>
           </section>
 
-          <div className="mb-6 flex w-full flex-col gap-3">
-            <div className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.05] px-5 py-3 text-center backdrop-blur-md sm:px-6">
+          {/* Status bars */}
+          <div className="flex flex-col gap-3">
+            <div className="matchmaking-status-bar flex items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.05] px-5 py-3 text-center backdrop-blur-md sm:px-6">
               <Clock className="h-5 w-5 shrink-0 text-cyan-300/80" />
               <p className="text-sm font-medium text-white/85">
                 Đã tìm kiếm:{" "}
                 <span className="font-semibold text-cyan-200">{searchDuration} giây</span>
               </p>
             </div>
-            <div className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.05] px-5 py-3 text-center backdrop-blur-md sm:px-6">
+            <div className="matchmaking-status-bar flex items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.05] px-5 py-3 text-center backdrop-blur-md sm:px-6">
               <Clock className="h-5 w-5 shrink-0 text-cyan-300/80" />
               <p className="text-sm font-medium text-white/85">
                 Thời gian chờ ước tính: <EstimatedTime searchDuration={searchDuration} />
@@ -111,16 +126,21 @@ export function MatchmakingWaitScreen() {
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={handleCancel}
-            className="matchmaking-cancel-btn w-full rounded-2xl border border-cyan-400/35 bg-white/[0.06] py-3.5 text-center text-sm font-semibold text-cyan-100 transition-colors duration-200 hover:border-cyan-300/55 hover:bg-cyan-500/15 hover:text-white active:scale-[0.99]"
-          >
-            Hủy tìm kiếm
-          </button>
+          {/* Cancel button with glow border */}
+          <div className="mt-6 flex justify-center">
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="matchmaking-cancel-btn relative w-full overflow-hidden rounded-2xl border border-cyan-400/35 bg-white/[0.06] py-3.5 text-center text-sm font-semibold text-cyan-100 transition-all duration-200 hover:border-cyan-300/55 hover:bg-cyan-500/15 hover:text-white active:scale-[0.99] sm:w-[280px]"
+            >
+              <span className="relative z-10">Hủy tìm kiếm</span>
+              <div className="matchmaking-btn-glow" aria-hidden />
+            </button>
+          </div>
         </div>
 
-        <p className="mt-6 flex max-w-md items-start justify-center gap-2 text-center text-xs leading-relaxed text-cyan-200/65 sm:text-sm">
+        {/* Tips section */}
+        <p className="matchmaking-tip mt-6 flex items-start justify-center gap-2 text-center text-xs leading-relaxed text-cyan-200/65 sm:text-sm">
           <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-cyan-400/80" />
           <span>Mẹo: Thời gian tìm trận nhanh hơn vào giờ cao điểm</span>
         </p>
