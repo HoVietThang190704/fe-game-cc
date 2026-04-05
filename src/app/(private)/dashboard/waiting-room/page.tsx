@@ -352,8 +352,6 @@ export default function WaitingRoomPage() {
             opponent={opponentPlayer}
           />
 
-          <MatchSettingsSection />
-
           <ActionButtonsSection
             onLeaveRoom={async () => {
               if (!roomId) {
@@ -389,6 +387,10 @@ export default function WaitingRoomPage() {
             onStartMatch={() => {
               // TODO: Sẵn sàng logic (chuyển sang game / socket)
             }}
+            isHost={false}
+            isReady={false}
+            canStart={false}
+            onToggleReady={() => {}}
           />
         </section>
       </div>
