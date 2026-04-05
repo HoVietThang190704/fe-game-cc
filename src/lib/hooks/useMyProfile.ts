@@ -7,10 +7,6 @@ export interface MyProfile {
   rank: number;
   avatar_url?: string;
   joinDate: string;
-  wins?: number;
-  losses?: number;
-  totalMatches?: number;
-  winRate?: number;
 }
 
 export function useMyProfile(): {
@@ -27,7 +23,7 @@ export function useMyProfile(): {
       setLoading(true);
       try {
         const data = await getUserProfile(
-          "username,name,rank,avatar_url,createdAt,wins,losses,totalMatches,winRate",
+          "username,name,rank,avatar_url,createdAt",
         );
 
         let joinDate = "N/A";
@@ -51,10 +47,6 @@ export function useMyProfile(): {
           rank: data.rank ?? 1000,
           avatar_url: data.avatar_url,
           joinDate,
-          wins: (data as Record<string, unknown>).wins as number | undefined,
-          losses: (data as Record<string, unknown>).losses as number | undefined,
-          totalMatches: (data as Record<string, unknown>).totalMatches as number | undefined,
-          winRate: (data as Record<string, unknown>).winRate as number | undefined,
         });
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load profile");

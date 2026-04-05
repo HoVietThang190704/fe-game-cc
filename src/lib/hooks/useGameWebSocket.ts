@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef, useCallback } from "react";
-import { Client } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { Client, Frame, Message } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 export interface StompMessage {
   type: string;
@@ -9,7 +9,6 @@ export interface StompMessage {
 
 interface WebSocketHookOptions {
   matchId?: string;
-  userId?: string;
   onMessage?: (message: StompMessage) => void;
   onConnect?: () => void;
   onDisconnect?: () => void;
@@ -17,10 +16,10 @@ interface WebSocketHookOptions {
 }
 
 export const useGameWebSocket = (options: WebSocketHookOptions = {}) => {
-  const { matchId, userId, onMessage, onConnect, onDisconnect, onError } = options;
+  const { matchId, onMessage, onConnect, onDisconnect, onError } = options;
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const stompClientRef = useRef<Client | null>(null);
+  const clientRef = useRef<Client | null>(null);
   const onMessageRef = useRef(onMessage);
   const onConnectRef = useRef(onConnect);
   const onDisconnectRef = useRef(onDisconnect);
@@ -33,112 +32,84 @@ export const useGameWebSocket = (options: WebSocketHookOptions = {}) => {
     onErrorRef.current = onError;
   }, [onMessage, onConnect, onDisconnect, onError]);
 
-  const disconnect = useCallback(() => {
-    if (stompClientRef.current) {
-      console.log("Disconnecting STOMP client...");
-      stompClientRef.current.deactivate();
-      stompClientRef.current = null;
-      setIsConnected(false);
-    }
-  }, []);
-
   const connect = useCallback(() => {
-    if (stompClientRef.current && stompClientRef.current.active) {
+    if (!matchId) {
       return;
     }
+    try {
+      const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:8080';
+      const wsUrl = `${serverUrl.replace(/\/$/, '')}/ws-game`;
 
-    const accessToken = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
-    if (!accessToken) {
-      setError("Missing access token");
-      return;
+      const client = new Client({
+        webSocketFactory: () => new SockJS(wsUrl),
+        reconnectDelay: 2000,
+        heartbeatIncoming: 4000,
+        heartbeatOutgoing: 4000,
+        onConnect: () => {
+          console.log('STOMP connected');
+          setIsConnected(true);
+          setError(null);
+          onConnectRef.current?.();
+
+          // Subscribe to game updates for the current match only
+          client.subscribe(`/topic/match.${matchId}`, (message: Message) => {
+            try {
+              const body = JSON.parse(message.body);
+              onMessageRef.current?.(body);
+            } catch (e) {
+              console.error('Failed to parse STOMP message:', e);
+            }
+          });
+        },
+        onDisconnect: () => {
+          console.log('STOMP disconnected');
+          setIsConnected(false);
+          onDisconnectRef.current?.();
+        },
+        onStompError: (frame: Frame) => {
+          console.error('STOMP error:', frame);
+          setError('Connection error');
+          onErrorRef.current?.(frame);
+        },
+      });
+
+      clientRef.current = client;
+      client.activate();
+    } catch (e) {
+      console.error('Failed to create STOMP client:', e);
+      setError('Failed to connect');
+      onErrorRef.current?.(e);
     }
-
-    const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:8080";
-    console.log("Connecting to WebSocket at:", serverUrl + "/ws-game?token=" + accessToken);
-    const client = new Client({
-      webSocketFactory: () => new SockJS(serverUrl + "/ws-game?token=" + accessToken),
-      connectHeaders: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      debug: (str) => {
-        console.log("STOMP Debug:", str);
-      },
-      reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-    });
-
-    client.onConnect = (frame) => {
-      console.log("STOMP Connected:", frame);
-      setIsConnected(true);
-      setError(null);
-      onConnectRef.current?.();
-
-      if (matchId) {
-        console.log(`Subscribing to /topic/match.${matchId}`);
-        client.subscribe(`/topic/match.${matchId}`, (message) => {
-          try {
-            const body = JSON.parse(message.body);
-            onMessageRef.current?.({
-              type: body.type || "unknown",
-              payload: body.payload || body,
-            });
-          } catch (e) {
-            console.error("Failed to parse STOMP message", e);
-          }
-        });
-      }
-
-      if (userId) {
-        console.log(`Subscribing to /topic/user.${userId}.matchmaking`);
-        client.subscribe(`/topic/user.${userId}.matchmaking`, (message) => {
-          try {
-            const body = JSON.parse(message.body);
-            onMessageRef.current?.({
-              type: body.type || "match_found",
-              payload: body.payload || body,
-            });
-          } catch (e) {
-            console.error("Failed to parse matchmaking message", e);
-          }
-        });
-      }
-    };
-
-    client.onStompError = (frame) => {
-      console.error("Broker reported error: " + frame.headers["message"]);
-      console.error("Additional details: " + frame.body);
-      setError("STOMP Error: " + frame.headers["message"]);
-      onErrorRef.current?.(frame);
-    };
-
-    client.onWebSocketClose = () => {
-      console.log("WebSocket connection closed");
-      setIsConnected(false);
-      onDisconnectRef.current?.();
-    };
-
-    client.activate();
-    stompClientRef.current = client;
-  }, [matchId, userId]);
+  }, [matchId]);
 
   const send = useCallback((destination: string, body: any) => {
-    if (stompClientRef.current && stompClientRef.current.connected) {
-      stompClientRef.current.publish({
+    if (clientRef.current?.connected) {
+      clientRef.current.publish({
         destination,
         body: JSON.stringify(body),
       });
     } else {
-      console.warn("Cannot send message: STOMP client not connected");
+      console.warn('STOMP client not connected');
+    }
+  }, []);
+
+  const disconnect = useCallback(() => {
+    if (clientRef.current) {
+      clientRef.current.deactivate();
+      clientRef.current = null;
     }
   }, []);
 
   useEffect(() => {
+    if (!matchId) {
+      return;
+    }
     connect();
+
     return () => {
       disconnect();
     };
-  }, [connect, disconnect]);
+  }, [matchId, connect, disconnect]);
 
   return {
     isConnected,
