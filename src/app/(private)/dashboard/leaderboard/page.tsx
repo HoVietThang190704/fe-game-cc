@@ -23,11 +23,9 @@ const LeaderboardPage = () => {
         // Lấy token động từ localStorage
         const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') || undefined : undefined;
         const res = await fetchLeaderboard(token);
-        // Nếu backend trả về userId hiện tại, có thể lấy từ token hoặc context
         const userId = undefined;
         const mapped = mapLeaderboardToPlayers(res.data, userId);
         setPlayers(mapped);
-        // Tìm user hiện tại nếu có
         setCurrentUser(mapped.find((p) => p.isCurrentUser) || mapped[0] || null);
       } catch (e: any) {
         setError(e.message || 'Lỗi không xác định');
