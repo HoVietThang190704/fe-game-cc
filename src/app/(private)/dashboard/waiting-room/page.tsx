@@ -66,7 +66,7 @@ export default function WaitingRoomPage() {
               setPlayerName(displayName);
             }
           } catch {
-            // ignore profile load errors here
+           
           }
           return;
         }
