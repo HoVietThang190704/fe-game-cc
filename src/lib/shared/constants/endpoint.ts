@@ -6,6 +6,11 @@ export const Endpoint = {
     USER: '/api/user',
     MATCH_HISTORY: '/api/match/history',
     MATCH_STATS: '/api/match/stats',
+    MATCH_CREATE: '/api/matches/create',
+    MATCH_JOIN: '/api/matches/join',
+    MATCH_STATE: '/api/matches',
+    MATCH_FIND: '/api/matches/find',
+    MATCH_CANCEL: '/api/matches/cancel',
 } as const;
 
 export type EndpointKey = keyof typeof Endpoint;
