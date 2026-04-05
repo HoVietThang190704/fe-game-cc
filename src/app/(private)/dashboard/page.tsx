@@ -1,15 +1,22 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { DashboardNavbar } from "@/src/components/dashboard/DashboardNavbar";
 import { CommandCard } from "@/src/components/dashboard/CommandCard";
 import { ProfileCard } from "@/src/components/dashboard/ProfileCard";
 import { useDashboardData } from "@/src/lib/hooks/useDashboardData";
+import { JoinRoomModal } from "@/src/components/dashboard/JoinRoomModal";
+import { joinPrivateMatch } from "@/src/lib/api/match";
+
+const ROOM_PIN_STORAGE_KEY = "currentRoomPin";
+const ROOM_ID_STORAGE_KEY = "currentMatchId";
+const LEFT_ROOM_FLAG = "leftRoom";
 
 export default function DashboardPage() {
   const router = useRouter();
   const { data, loading, error } = useDashboardData();
+  const [isJoinRoomModalOpen, setIsJoinRoomModalOpen] = useState(false);
 
   const handleCommand = useCallback(
     (commandId: string) => {
@@ -17,9 +24,43 @@ export default function DashboardPage() {
         router.push("/matchmaking");
         return;
       }
+      if (commandId === "join-room") {
+        setIsJoinRoomModalOpen(true);
+        return;
+      }
       console.log("Command clicked:", commandId);
     },
     [router]
+  );
+
+  const handleJoinRoomSubmit = useCallback(
+    async (pinCode: string) => {
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) {
+        throw new Error("Thiếu access token. Vui lòng đăng nhập lại.");
+      }
+
+      try {
+        const room = await joinPrivateMatch(pinCode, accessToken);
+
+        if (room.pinCode) {
+          localStorage.setItem(ROOM_PIN_STORAGE_KEY, room.pinCode);
+        }
+        if (room.matchId) {
+          localStorage.setItem(ROOM_ID_STORAGE_KEY, room.matchId);
+        }
+        localStorage.setItem(LEFT_ROOM_FLAG, "false");
+
+        router.push("/dashboard/waiting-room");
+      } catch (err: unknown) {
+        throw new Error(
+          err instanceof Error
+            ? err.message
+            : "Không thể tham gia phòng. Kiểm tra lại mã PIN.",
+        );
+      }
+    },
+    [router],
   );
 
   if (loading) {
@@ -52,6 +93,12 @@ export default function DashboardPage() {
           </article>
         </section>
       </div>
+      
+      <JoinRoomModal
+        isOpen={isJoinRoomModalOpen}
+        onClose={() => setIsJoinRoomModalOpen(false)}
+        onSubmit={handleJoinRoomSubmit}
+      />
     </main>
   );
 }
