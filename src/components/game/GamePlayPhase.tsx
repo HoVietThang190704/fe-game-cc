@@ -140,6 +140,7 @@ export const GamePlayPhase: React.FC<GamePlayPhaseProps> = ({
             onPower2={() => onPowerUse?.("left", 2)}
             onPower3={() => onPowerUse?.("left", 3)}
             disabled={!isYourTurn}
+            shieldAvailable={playerShieldAvailable}
           />
         </div>
 
@@ -165,6 +166,7 @@ export const GamePlayPhase: React.FC<GamePlayPhaseProps> = ({
             onPower2={() => onPowerUse?.("right", 2)}
             onPower3={() => onPowerUse?.("right", 3)}
             disabled={currentPlayer !== "opponent"}
+            shieldAvailable={opponentShieldAvailable}
           />
         </div>
       </div>
