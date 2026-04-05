@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { MatchmakingWaitScreen } from "@/src/components/matchmaking/MatchmakingScreen";
 
 export const metadata: Metadata = {
-  title: "Đang tìm trận | Minesweeper PvP",
-  description: "Trạng thái chờ ghép trận tự động",
+  title: "Đang tìm đối thủ | Minesweeper PvP",
+  description: "Hệ thống đang ghép bạn với người chơi cùng trình độ",
 };
 
 export default function MatchmakingPage() {
