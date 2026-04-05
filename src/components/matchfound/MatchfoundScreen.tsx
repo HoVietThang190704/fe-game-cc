@@ -26,9 +26,10 @@ export function MatchmakingWaitScreen() {
 
   useEffect(() => {
     if (matchId) {
+      disconnect();
       router.push(`/matchfound?matchId=${matchId}`);
     }
-  }, [matchId, router]);
+  }, [matchId, router, disconnect]);
 
   useEffect(() => {
     connect();
