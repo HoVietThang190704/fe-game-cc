@@ -1,7 +1,16 @@
 export const Endpoint = {
-    LOGIN: '/auth/login',
-    REGISTER: '/auth/register',
-    USER: '/user'
+    LOGIN: '/api/auth/login',
+    REGISTER: '/api/auth/register',
+    REFRESH: '/api/auth/refresh',
+    LOGOUT: '/api/auth/logout',
+    USER: '/api/user',
+    MATCH_HISTORY: '/api/match/history',
+    MATCH_STATS: '/api/match/stats',
+    MATCH_CREATE: '/api/matches/create',
+    MATCH_JOIN: '/api/matches/join',
+    MATCH_STATE: '/api/matches',
+    MATCH_FIND: '/api/matches/find',
+    MATCH_CANCEL: '/api/matches/cancel',
 } as const;
 
 export type EndpointKey = keyof typeof Endpoint;
