@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { MatchmakingWaitScreen } from "@/src/components/matchmaking/MatchmakingScreen";
+import { MatchmakingWaitScreen } from "@/src/components/matchfound/MatchfoundScreen";
 
 export const metadata: Metadata = {
   title: "Đang tìm đối thủ | Minesweeper PvP",
