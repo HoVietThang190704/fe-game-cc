@@ -3,27 +3,10 @@
 import React from "react";
 import { logout } from "@/src/lib/api/auth";
 import Link from "next/link";
-import { useTheme } from "next-themes";
 import { ArrowLeft, LogOut } from "lucide-react";
-
 import { Button } from "@/src/components/ui/button";
-import { SettingsHeaderCard } from "@/components/dashboard/settings/SettingsHeaderCard";
-import { GameSettingsCard } from "@/components/dashboard/settings/GameSettingsCard";
-import { AccountSettingsCard } from "@/components/dashboard/settings/AccountSettingsCard";
-import { InfoCard } from "@/components/dashboard/settings/InfoCard";
 
 export default function SettingsPage() {
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = React.useState(false);
-  const [soundEnabled, setSoundEnabled] = React.useState(true);
-  const [language, setLanguage] = React.useState("vi");
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const darkModeEnabled = mounted ? theme !== "light" : true;
-
   const handleLogout = async () => {
     try {
       const refreshToken = localStorage.getItem("refreshToken");
@@ -35,7 +18,7 @@ export default function SettingsPage() {
       localStorage.removeItem("refreshToken");
       window.location.href = "/";
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Đăng xuất thất bại";
+      const message = err instanceof Error ? err.message : "Logout failed";
       alert(message);
     }
   };
@@ -50,21 +33,14 @@ export default function SettingsPage() {
         >
           <Link href="/dashboard" className="inline-flex items-center gap-2">
             <ArrowLeft className="h-4 w-4" />
-            Quay lại
+            Back
           </Link>
         </Button>
 
-        <SettingsHeaderCard />
-        <GameSettingsCard
-          soundEnabled={soundEnabled}
-          setSoundEnabled={setSoundEnabled}
-          darkModeEnabled={darkModeEnabled}
-          setTheme={setTheme}
-          language={language}
-          setLanguage={setLanguage}
-        />
-        <AccountSettingsCard />
-        <InfoCard />
+        <div className="text-center py-10">
+          <h1 className="text-3xl font-bold text-cyan-300 mb-4">Settings</h1>
+          <p className="text-sky-200/60">Feature coming soon...</p>
+        </div>
 
         <Button
           variant="destructive"
@@ -72,7 +48,7 @@ export default function SettingsPage() {
           onClick={handleLogout}
         >
           <LogOut className="h-4 w-4" />
-          Đăng xuất
+          Logout
         </Button>
       </div>
     </main>
