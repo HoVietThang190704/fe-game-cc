@@ -7,10 +7,10 @@ import { useTheme } from "next-themes";
 import { ArrowLeft, LogOut } from "lucide-react";
 
 import { Button } from "@/src/components/ui/button";
-import { SettingsHeaderCard } from "@/components/dashboard/settings/SettingsHeaderCard";
-import { GameSettingsCard } from "@/components/dashboard/settings/GameSettingsCard";
-import { AccountSettingsCard } from "@/components/dashboard/settings/AccountSettingsCard";
-import { InfoCard } from "@/components/dashboard/settings/InfoCard";
+import { SettingsHeaderCard } from "@/src/components/dashboard/settings/SettingsHeaderCard";
+import { GameSettingsCard } from "@/src/components/dashboard/settings/GameSettingsCard";
+import { AccountSettingsCard } from "@/src/components/dashboard/settings/AccountSettingsCard";
+import { InfoCard } from "@/src/components/dashboard/settings/InfoCard";
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
