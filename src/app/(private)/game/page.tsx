@@ -15,17 +15,13 @@ export default function GamePage() {
   const [winnerEloDelta, setWinnerEloDelta] = useState(20);
   const [loserEloDelta, setLoserEloDelta] = useState(-10);
 
-  // Setup phase
   const { setupState, toggleCell, clearSelection, completeSetup } =
     useGameSetup(20);
 
-  // Your board (opponent will find mines here)
   const yourBoard = useGameBoard(20);
 
-  // Opponent board (you will find mines here)
   const opponentBoard = useGameBoard(20);
 
-  // Stats
   const [stats, setStats] = useState({
     playerHits: 0,
     playerMisses: 0,
@@ -33,14 +29,11 @@ export default function GamePage() {
     opponentMisses: 0,
   });
 
-  // Handle setup confirmation
   const handleSetupComplete = useCallback(() => {
     completeSetup();
 
-    // Place mines on your board based on selection
     yourBoard.placeMinesOnBoard(Array.from(setupState.selectedCells));
 
-    // Simulate opponent placing mines
     const randomCells = new Set<string>();
     while (randomCells.size < 20) {
       const randomId = `${Math.floor(Math.random() * 10)}-${Math.floor(
@@ -53,14 +46,12 @@ export default function GamePage() {
     setGamePhase("playing");
   }, [completeSetup, setupState.selectedCells, yourBoard, opponentBoard]);
 
-  // Handle cell click on opponent board
   const handleOpponentCellClick = useCallback(
     (cellId: string) => {
       if (currentPlayer !== "you") return;
 
       opponentBoard.reveal(cellId);
 
-      // Logic to check result
       const [row, col] = cellId.split("-").map(Number);
       const cell = opponentBoard.board.cells[row][col];
 
@@ -70,7 +61,6 @@ export default function GamePage() {
             ...prev,
             playerHits: prev.playerHits + 1,
           };
-          // Simulate game ending when hitting 20 mines for testing
           if (newStats.playerHits >= 20) {
              setWinner("you");
              setGamePhase("finished");
@@ -82,14 +72,12 @@ export default function GamePage() {
           ...prev,
           playerMisses: prev.playerMisses + 1,
         }));
-        // Turn ends
         setCurrentPlayer("opponent");
       }
     },
     [currentPlayer, opponentBoard]
   );
 
-  // Handle right click on opponent board (flag)
   const handleOpponentCellRightClick = useCallback(
     (cellId: string, e: React.MouseEvent) => {
       e.preventDefault();
@@ -99,16 +87,14 @@ export default function GamePage() {
     [currentPlayer, opponentBoard]
   );
 
-  // Handle power usage
   const handlePowerUse = useCallback(
     (boardSide: "left" | "right", powerIndex: 1 | 2 | 3) => {
       console.log(`Power ${powerIndex} used on ${boardSide} board`);
-      // TODO: Implement actual power mechanics
     },
     []
   );
 
-  // Handle reset
+
   const handleReset = useCallback(() => {
     setGamePhase("setup");
     setCurrentPlayer("you");
@@ -128,8 +114,7 @@ export default function GamePage() {
   useEffect(() => {
     if (gamePhase !== "finished") return;
 
-    // The user can choose to go to dashboard or replay.
-    // In fe-game it redirects after a few seconds. Here we will leave it manual for better UX.
+
   }, [gamePhase, router]);
 
   return (
