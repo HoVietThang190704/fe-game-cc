@@ -2,7 +2,7 @@ import { Zap } from "lucide-react"
 
 export function HeroSection() {
   return (
-    <section className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-muted to-background">
+    <section className="relative flex min-h-screen items-center justify-center bg-[#061421]">
       <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 px-6 text-center">
         <div className="flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1.5">
           <Zap className="h-3.5 w-3.5 text-primary" />
